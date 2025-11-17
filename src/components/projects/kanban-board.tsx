@@ -90,6 +90,7 @@ export function KanbanBoard({ projects: initialProjects, className }: KanbanBoar
         // Update project
         const { error: updateError } = await supabase
           .from('projects')
+          // @ts-ignore - Supabase client type inference issue
           .update({
             current_stage: targetStage.stage,
             stage_number: targetStage.number,
@@ -102,6 +103,7 @@ export function KanbanBoard({ projects: initialProjects, className }: KanbanBoar
         // Create stage history
         const { error: historyError } = await supabase
           .from('stage_history')
+          // @ts-ignore - Supabase client type inference issue
           .insert({
             project_id: projectId,
             from_stage: project.current_stage,

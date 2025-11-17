@@ -10,6 +10,11 @@ import { ProjectInfoCards } from '@/components/projects/project-info-cards';
 import { QuickStageChange } from '@/components/projects/quick-stage-change';
 import { ProjectActions } from '@/components/projects/project-actions';
 import { getStageConfig } from '@/lib/stages';
+import type { Project, Client } from '@/types/database.types';
+
+type ProjectWithClient = Project & {
+  client: Client | null;
+};
 
 export default async function ProjectDetailPage({
   params,
@@ -32,6 +37,8 @@ export default async function ProjectDetailPage({
     notFound();
   }
 
+  const projectWithClient = project as unknown as ProjectWithClient;
+
   // Fetch stage history with user data
   const { data: stageHistory } = await supabase
     .from('stage_history')
@@ -42,7 +49,7 @@ export default async function ProjectDetailPage({
     .eq('project_id', params.id)
     .order('created_at', { ascending: false });
 
-  const currentStageConfig = getStageConfig(project.current_stage);
+  const currentStageConfig = getStageConfig(projectWithClient.current_stage);
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -57,7 +64,7 @@ export default async function ProjectDetailPage({
 
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div className="flex-1 min-w-0">
-            <h1 className="text-3xl font-bold mb-2">{project.title}</h1>
+            <h1 className="text-3xl font-bold mb-2">{projectWithClient.title}</h1>
             <div className="flex items-center gap-3 flex-wrap">
               {currentStageConfig && (
                 <Badge
@@ -68,11 +75,11 @@ export default async function ProjectDetailPage({
                 </Badge>
               )}
               <span className="text-sm text-muted-foreground">
-                ეტაპი {project.stage_number} / 18
+                ეტაპი {projectWithClient.stage_number} / 18
               </span>
-              {project.client && (
+              {projectWithClient.client && (
                 <span className="text-sm text-muted-foreground">
-                  კლიენტი: <span className="font-medium">{project.client.name}</span>
+                  კლიენტი: <span className="font-medium">{projectWithClient.client.name}</span>
                 </span>
               )}
             </div>
@@ -81,11 +88,11 @@ export default async function ProjectDetailPage({
           {/* Action buttons */}
           <div className="flex items-center gap-2">
             <QuickStageChange
-              projectId={project.id}
-              currentStage={project.current_stage}
-              currentStageNumber={project.stage_number}
+              projectId={projectWithClient.id}
+              currentStage={projectWithClient.current_stage}
+              currentStageNumber={projectWithClient.stage_number}
             />
-            <ProjectActions projectId={project.id} projectTitle={project.title} />
+            <ProjectActions projectId={projectWithClient.id} projectTitle={projectWithClient.title} />
           </div>
         </div>
       </div>
@@ -95,8 +102,8 @@ export default async function ProjectDetailPage({
         {/* Left column - Stage progression */}
         <div className="lg:col-span-1">
           <StageProgressionTimeline
-            currentStage={project.current_stage}
-            currentStageNumber={project.stage_number}
+            currentStage={projectWithClient.current_stage}
+            currentStageNumber={projectWithClient.stage_number}
           />
         </div>
 
@@ -104,8 +111,8 @@ export default async function ProjectDetailPage({
         <div className="lg:col-span-2 space-y-8">
           {/* Project Info Cards */}
           <ProjectInfoCards
-            project={project}
-            client={project.client}
+            project={projectWithClient}
+            client={projectWithClient.client}
             stageHistory={stageHistory || []}
           />
 

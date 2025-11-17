@@ -26,7 +26,8 @@ export function ProjectsViewSwitcher({ projects }: ProjectsViewSwitcherProps) {
   // Normalize the data structure for both views
   const normalizedProjects = projects.map((p) => ({
     ...p,
-    client: p.clients || p.client,
+    client: p.clients || p.client || null,
+    clients: p.clients || p.client || null,
   }));
 
   return (

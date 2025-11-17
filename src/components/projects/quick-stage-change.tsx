@@ -91,6 +91,7 @@ export function QuickStageChange({
       // Update project stage
       const { error: updateError } = await supabase
         .from('projects')
+        // @ts-ignore - Supabase client type inference issue
         .update({
           current_stage: targetStageConfig.stage,
           stage_number: targetStageConfig.number,
@@ -103,6 +104,7 @@ export function QuickStageChange({
       // Create stage history entry
       const { error: historyError } = await supabase
         .from('stage_history')
+        // @ts-ignore - Supabase client type inference issue
         .insert({
           project_id: projectId,
           from_stage: currentStage,
