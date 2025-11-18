@@ -16,6 +16,7 @@ type Client = Database['public']['Tables']['clients']['Row'];
 interface ProjectFormProps {
   isEdit?: boolean;
   projectId?: string;
+  prefilledClientId?: string;
   initialData?: {
     title: string;
     client_id: string;
@@ -26,7 +27,7 @@ interface ProjectFormProps {
   };
 }
 
-export function ProjectForm({ isEdit = false, projectId, initialData }: ProjectFormProps) {
+export function ProjectForm({ isEdit = false, projectId, prefilledClientId, initialData }: ProjectFormProps) {
   const router = useRouter();
   const supabase = createClient();
   const [loading, setLoading] = useState(false);
@@ -36,7 +37,7 @@ export function ProjectForm({ isEdit = false, projectId, initialData }: ProjectF
   // Form state
   const [formData, setFormData] = useState({
     title: initialData?.title || '',
-    clientId: initialData?.client_id || '',
+    clientId: initialData?.client_id || prefilledClientId || '',
     clientName: '',
     clientEmail: initialData?.client_email || '',
     clientPhone: initialData?.client_phone || '',
@@ -94,21 +95,30 @@ export function ProjectForm({ isEdit = false, projectId, initialData }: ProjectF
 
       // Create new client if in new client mode
       if (newClientMode) {
+        const clientData = {
+          name: formData.clientName,
+          email: formData.clientEmail || null,
+          phone: formData.clientPhone || null,
+          created_by: user.id,
+        };
+
+        console.log('Creating client with data:', clientData);
+
         const { data: newClient, error: clientError } = await supabase
           .from('clients')
           // @ts-ignore - Supabase client type inference issue
-          .insert({
-            name: formData.clientName,
-            email: formData.clientEmail || null,
-            phone: formData.clientPhone || null,
-            created_by: user.id,
-          })
+          .insert(clientData)
           .select()
           .single();
 
-        if (clientError) throw clientError;
+        if (clientError) {
+          console.error('Client insert error:', clientError);
+          throw clientError;
+        }
+
         // @ts-ignore - Supabase client type inference issue
         clientId = newClient.id;
+        console.log('Created client with ID:', clientId);
       }
 
       if (isEdit && projectId) {
@@ -131,22 +141,29 @@ export function ProjectForm({ isEdit = false, projectId, initialData }: ProjectF
         router.push(`/dashboard/projects/${projectId}`);
       } else {
         // Create new project (auto-assign to Stage 1)
+        const projectData = {
+          title: formData.title,
+          client_id: clientId,
+          description: formData.description || null,
+          notes: formData.notes || null,
+          current_stage: 'დასაწყები' as const,
+          stage_number: 1,
+          created_by: user.id,
+        };
+
+        console.log('Creating project with data:', projectData);
+
         const { data: newProject, error } = await supabase
           .from('projects')
           // @ts-ignore - Supabase client type inference issue
-          .insert({
-            title: formData.title,
-            client_id: clientId,
-            description: formData.description || null,
-            notes: formData.notes || null,
-            current_stage: 'დასაწყები',
-            stage_number: 1,
-            created_by: user.id,
-          })
+          .insert(projectData)
           .select()
           .single();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Project insert error:', error);
+          throw error;
+        }
 
         // Create initial stage history entry
         // @ts-ignore - Supabase client type inference issue
@@ -165,9 +182,15 @@ export function ProjectForm({ isEdit = false, projectId, initialData }: ProjectF
         // @ts-ignore - Supabase client type inference issue
         router.push(`/dashboard/projects/${newProject.id}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving project:', error);
-      showToast.error(toastMessages.project.error);
+      console.error('Error details:', {
+        message: error?.message,
+        code: error?.code,
+        details: error?.details,
+        hint: error?.hint,
+      });
+      showToast.error(error?.message || toastMessages.project.error);
     } finally {
       setLoading(false);
     }

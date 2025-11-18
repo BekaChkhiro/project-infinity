@@ -1,6 +1,10 @@
 import { ProjectForm } from '@/components/projects/project-form';
 
-export default function NewProjectPage() {
+export default function NewProjectPage({
+  searchParams,
+}: {
+  searchParams: { client?: string };
+}) {
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="mb-6">
@@ -10,7 +14,7 @@ export default function NewProjectPage() {
         </p>
       </div>
       <div className="max-w-3xl">
-        <ProjectForm />
+        <ProjectForm prefilledClientId={searchParams.client} />
       </div>
     </div>
   );

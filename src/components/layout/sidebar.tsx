@@ -8,13 +8,15 @@ import {
   FolderKanban,
   Users,
   Settings,
-  BarChart3
+  BarChart3,
+  Filter
 } from 'lucide-react';
 
 const navigation = [
   { name: 'მთავარი', href: '/dashboard', icon: LayoutDashboard },
   { name: 'პროექტები', href: '/dashboard/projects', icon: FolderKanban },
   { name: 'კლიენტები', href: '/dashboard/clients', icon: Users },
+  { name: 'ფილტრები', href: '/dashboard/filters', icon: Filter },
   { name: 'ანალიტიკა', href: '/dashboard/analytics', icon: BarChart3 },
   { name: 'პარამეტრები', href: '/dashboard/settings', icon: Settings },
 ];
@@ -34,7 +36,11 @@ export function Sidebar() {
       </div>
       <nav className="flex-1 space-y-1 p-4">
         {navigation.map((item) => {
-          const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
+          // For dashboard home, only match exact path
+          // For other pages, match if path starts with the href
+          const isActive = item.href === '/dashboard'
+            ? pathname === '/dashboard'
+            : pathname?.startsWith(item.href);
           return (
             <Link
               key={item.name}

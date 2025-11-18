@@ -1,12 +1,11 @@
-import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
-import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { StagePipeline } from '@/components/dashboard/stage-pipeline';
 import { ActivityFeed } from '@/components/dashboard/activity-feed';
-import { FolderKanban, Code, DollarSign, CheckCircle, Plus, List } from 'lucide-react';
+import { ProjectFormDialog } from '@/components/projects/project-form-dialog';
+import { FolderKanban, Code, DollarSign, CheckCircle, List } from 'lucide-react';
 import { startOfMonth } from 'date-fns';
 import type { User, Project, StageHistory } from '@/types/database.types';
 
@@ -17,15 +16,11 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect('/login');
-  }
-
   // Fetch user profile
   const { data: profile } = await supabase
     .from('users')
     .select('*')
-    .eq('id', user.id)
+    .eq('id', user!.id)
     .single() as { data: User | null };
 
   // Fetch all projects for statistics
@@ -99,13 +94,12 @@ export default async function DashboardPage() {
     .limit(10) as { data: (StageHistory & { projects: Pick<Project, 'title'> | null })[] | null };
 
   return (
-    <DashboardLayout user={profile}>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-3xl font-bold tracking-tight">მთავარი</h2>
             <p className="text-muted-foreground">
-              მოგესალმებით, {profile?.full_name || user.email}!
+              მოგესალმებით, {profile?.full_name || user?.email || 'მომხმარებელი'}!
             </p>
           </div>
           <div className="flex gap-3">
@@ -115,12 +109,7 @@ export default async function DashboardPage() {
                 ყველა პროექტი
               </Button>
             </Link>
-            <Link href="/dashboard/projects/new">
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                ახალი პროექტი
-              </Button>
-            </Link>
+            <ProjectFormDialog />
           </div>
         </div>
 
@@ -149,6 +138,5 @@ export default async function DashboardPage() {
 
         <ActivityFeed activities={recentActivity || []} />
       </div>
-    </DashboardLayout>
   );
 }

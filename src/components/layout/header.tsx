@@ -13,6 +13,7 @@ import {
 import { LogOut, User as UserIcon } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import { GlobalSearch } from '@/components/search/global-search';
 
 interface HeaderProps {
   user: User | null;
@@ -44,6 +45,7 @@ export function Header({ user }: HeaderProps) {
         <h1 className="text-lg font-semibold">პროექტების მართვა</h1>
       </div>
       <div className="flex items-center gap-4">
+        <GlobalSearch />
         {user && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
