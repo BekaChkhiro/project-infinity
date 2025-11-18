@@ -45,6 +45,17 @@ export const showToast = {
       },
     });
   },
+  info: (message: string, options?: { description?: string }) => {
+    toast(message, {
+      duration: 3000,
+      position: 'top-right',
+      style: {
+        background: '#3b82f6',
+        color: '#fff',
+      },
+      icon: '🔔',
+    });
+  },
   loading: (message: string) => {
     return toast.loading(message, {
       position: 'top-right',

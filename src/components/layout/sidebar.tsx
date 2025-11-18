@@ -9,7 +9,11 @@ import {
   Users,
   Settings,
   BarChart3,
-  Filter
+  Filter,
+  Bell,
+  Zap,
+  FileText,
+  Mail,
 } from 'lucide-react';
 
 const navigation = [
@@ -18,6 +22,10 @@ const navigation = [
   { name: 'კლიენტები', href: '/dashboard/clients', icon: Users },
   { name: 'ფილტრები', href: '/dashboard/filters', icon: Filter },
   { name: 'ანალიტიკა', href: '/dashboard/analytics', icon: BarChart3 },
+  { name: 'შეტყობინებები', href: '/dashboard/notifications', icon: Bell },
+  { name: 'ავტომატიზაცია', href: '/dashboard/automation', icon: Zap },
+  { name: 'ელ. ფოსტის შაბლონები', href: '/dashboard/email-templates', icon: Mail },
+  { name: 'აუდიტის ლოგები', href: '/dashboard/audit', icon: FileText },
   { name: 'პარამეტრები', href: '/dashboard/settings', icon: Settings },
 ];
 

@@ -14,6 +14,7 @@ import { LogOut, User as UserIcon } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { GlobalSearch } from '@/components/search/global-search';
+import { NotificationCenter } from '@/components/notifications/notification-center';
 
 interface HeaderProps {
   user: User | null;
@@ -47,7 +48,9 @@ export function Header({ user }: HeaderProps) {
       <div className="flex items-center gap-4">
         <GlobalSearch />
         {user && (
-          <DropdownMenu>
+          <>
+            <NotificationCenter userId={user.id} />
+            <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-accent">
                 <div className="text-right">
@@ -76,6 +79,7 @@ export function Header({ user }: HeaderProps) {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          </>
         )}
       </div>
     </header>

@@ -5,6 +5,9 @@ import { Button } from '@/components/ui/button';
 import { StagePipeline } from '@/components/dashboard/stage-pipeline';
 import { ActivityFeed } from '@/components/dashboard/activity-feed';
 import { ProjectFormDialog } from '@/components/projects/project-form-dialog';
+import { StuckProjectsWidget } from '@/components/dashboard/stuck-projects-widget';
+import { RequiredActionsWidget } from '@/components/dashboard/required-actions-widget';
+import { AutomationStatsWidget } from '@/components/dashboard/automation-stats-widget';
 import { FolderKanban, Code, DollarSign, CheckCircle, List } from 'lucide-react';
 import { startOfMonth } from 'date-fns';
 import type { User, Project, StageHistory } from '@/types/database.types';
@@ -135,6 +138,13 @@ export default async function DashboardPage() {
         </div>
 
         <StagePipeline projectCounts={projectCounts} />
+
+        <AutomationStatsWidget />
+
+        <div className="grid gap-4 md:grid-cols-2">
+          <StuckProjectsWidget />
+          <RequiredActionsWidget />
+        </div>
 
         <ActivityFeed activities={recentActivity || []} />
       </div>
